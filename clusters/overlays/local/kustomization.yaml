@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
 - ../../manifests
 - flux-sources.yaml
+- public-secret.yaml
