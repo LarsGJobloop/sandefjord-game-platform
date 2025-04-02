@@ -10,7 +10,8 @@ init:
 up:
   terraform -chdir=infrastructure/environments/local apply -auto-approve
   kubectl apply -k clusters/overlays/local
-  # Patch FluxCD to point to the currently active branch
+  # Setup FluxCD to dynamically use the currently checked out branch
+  kubectl apply -f clusters/overlays/local/flux-sources.yaml
   kubectl patch gitrepository flux-system \
     --namespace flux-system \
     --type merge \
