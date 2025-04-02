@@ -11,7 +11,7 @@ spec:
     branch: main
   secretRef:
     name: flux-system
-  url: ssh://git@github.com/LarsGKodehode/kodehode-monorepo-kubernetes
+  url: ssh://git@github.com/LarsGJobloop/sandefjord-game-platform
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
