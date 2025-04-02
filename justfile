@@ -9,13 +9,14 @@ init:
 # Creates the local k3d cluster and associated resources
 up:
   terraform -chdir=infrastructure/environments/local apply -auto-approve
-  kubectl apply -k clusters/overlays/local
   # Setup FluxCD to dynamically use the currently checked out branch
   kubectl apply -f clusters/overlays/local/flux-sources.yaml
   kubectl patch gitrepository flux-system \
     --namespace flux-system \
     --type merge \
     --patch '{"spec": {"ref": {"branch": "{{`git rev-parse --abbrev-ref HEAD`}}"}}}'
+  # Apply the rest of the manifests
+  kubectl apply -k clusters/overlays/local
 
 # Destroys the local k3d cluster and associated resources
 down:
