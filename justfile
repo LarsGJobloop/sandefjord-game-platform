@@ -10,6 +10,9 @@ init:
 # Needs to exist on GitHub to work. TODO! Setup verifier for remote branch
 apply:
   terraform -chdir=infrastructure/environments/local apply -auto-approve
+  # Apply the fluxcd the manifests, need to be done twice as they include CRDs
+  if ! kubectl apply -k clusters/overlays/local; then sleep 3; kubectl apply -k clusters/overlays/local; fi
+
   # Setup FluxCD to dynamically use the currently checked out branch
   kubectl apply -k clusters/manifests/fluxcd
   kubectl apply -f clusters/overlays/local/flux-sources.yaml
@@ -17,8 +20,6 @@ apply:
     --namespace flux-system \
     --type merge \
     --patch '{"spec": {"ref": {"branch": "{{`git rev-parse --abbrev-ref HEAD`}}"}}}'
-  # Apply the rest of the manifests
-  kubectl apply -k clusters/overlays/local
 
 # Destroys the local k3d cluster and associated resources
 down:
