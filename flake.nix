@@ -38,24 +38,6 @@
             nodejs_22 # Frontend
             dotnetCorePackages.sdk_9_0 # Backend
             just # Task runner
-          ];
-
-          # Development Environment Variables
-          env = {
-            # Required for VS Code extensions .NET
-            DOTNET_ROOT = builtins.toString pkgs.dotnetCorePackages.sdk_9_0;
-          };
-        };
-
-        # Separate Dev Shell for platform work
-        platform = pkgs.mkShell {
-          # Project Dependencies
-          packages = with pkgs; [
-            # Toolchains
-            k3d # k3s in Docker
-            nodejs_22 # Frontend
-            dotnetCorePackages.sdk_9_0 # Backend
-            just # Task runner
 
             # Platform
             terraform # Infrastructure as Code CLI
