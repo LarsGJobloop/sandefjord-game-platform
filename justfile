@@ -10,6 +10,7 @@ init:
 up:
   terraform -chdir=infrastructure/environments/local apply -auto-approve
   # Setup FluxCD to dynamically use the currently checked out branch
+  kubectl apply -k clusters/manifests/fluxcd
   kubectl apply -f clusters/overlays/local/flux-sources.yaml
   kubectl patch gitrepository flux-system \
     --namespace flux-system \
@@ -21,3 +22,11 @@ up:
 # Destroys the local k3d cluster and associated resources
 down:
   terraform -chdir=infrastructure/environments/local destroy -auto-approve
+
+# Checks that all dependencies are installed
+verify-environment:
+  # TODO! Fix error propagation to caller
+  command -v just
+  command -v k3d
+  command -v terraform
+  command -v kubectl
