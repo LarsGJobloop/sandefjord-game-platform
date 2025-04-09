@@ -6,8 +6,9 @@ default:
 init:
   terraform -chdir=infrastructure/environments/local init
 
-# Creates the local k3d cluster and associated resources
-up:
+# Applies the currently checkout branch to the local cluster
+# Needs to exist on GitHub to work. TODO! Setup verifier for remote branch
+apply:
   terraform -chdir=infrastructure/environments/local apply -auto-approve
   # Setup FluxCD to dynamically use the currently checked out branch
   kubectl apply -k clusters/manifests/fluxcd
