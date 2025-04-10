@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
 - podinfo-source.yaml
 - podinfo-kustomization.yaml
+- ingress.yaml
