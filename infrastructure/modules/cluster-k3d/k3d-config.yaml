@@ -1,8 +1,6 @@
 # See link for documentation https://k3d.io/v5.1.0/usage/configfile/
 apiVersion: k3d.io/v1alpha5
 kind: Simple
-metadata:
-  name: ${cluster_name}
 servers: ${server_count}
 agents: ${agent_count}
 kubeAPI:
