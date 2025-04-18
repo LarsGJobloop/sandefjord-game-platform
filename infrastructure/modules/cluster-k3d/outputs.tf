@@ -1,5 +1,5 @@
-output "clusters_created" {
-  description = "Name of the created clusters."
+output "cluster_name" {
+  description = "Name of the created cluster."
   value       = var.k3d_cluster_name
 }
 output "k3d_cluster_ip" {
@@ -8,9 +8,9 @@ output "k3d_cluster_ip" {
 }
 output "k3d_host_lb_port" {
   description = "Port the LoadBalancer is exposed on."
-  value       = local.host_lb_port
+  value       = var.k3d_host_lb_port
 }
 output "k3d_api_port" {
   description = "The port of the Control Plane API."
-  value       = var.k3d_cluster_port
+  value       = local.k3d_cluster_port
 }

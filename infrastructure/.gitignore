@@ -6,6 +6,7 @@
 # Terraform state
 *.tfstate
 *.tfstate.backup
+*.tfstate.lock.info
 
 # Sensitive variable overrides
 *.tfvars

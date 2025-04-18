@@ -1,0 +1,16 @@
+# See link for documentation https://k3d.io/v5.1.0/usage/configfile/
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: ${cluster_name}
+servers: ${server_count}
+agents: ${agent_count}
+kubeAPI:
+  # host: "myhost.my.domain" # important for the `server` setting in the kubeconfig
+  hostIP: ${cluster_ip}
+  hostPort: "${cluster_port}"
+image: rancher/k3s:${k3s_version}
+ports:
+  - port: ${host_lb_port}:${cluster_lb_port}
+    nodeFilters:
+      - loadbalancer
