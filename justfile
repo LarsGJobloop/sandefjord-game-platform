@@ -37,8 +37,18 @@ down:
 
 # Checks that all dependencies are installed
 verify-environment:
-  @# TODO! Fix error propagation to caller
-  command -v just
-  command -v k3d
-  command -v terraform
-  command -v kubectl
+  #!/bin/bash
+  missing_tools=()
+  
+  command -v just >/dev/null || missing_tools+=("just (https://github.com/casey/just)")
+  command -v k3d >/dev/null || missing_tools+=("k3d (https://k3d.io/)")
+  command -v terraform >/dev/null || missing_tools+=("terraform (https://developer.hashicorp.com/terraform)")
+  command -v kubectl >/dev/null || missing_tools+=("kubectl (https://kubernetes.io/docs/tasks/tools/#kubectl)")
+  
+  if [ ${#missing_tools[@]} -ne 0 ]; then
+    echo "Missing required tools:"
+    for tool in "${missing_tools[@]}"; do
+      echo "  - $tool"
+    done
+    exit 1
+  fi
