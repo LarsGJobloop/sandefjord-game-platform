@@ -6,20 +6,25 @@ default:
 init:
   terraform -chdir=infrastructure/environments/local init
 
-# Applies the currently checkout branch to the local cluster. !!!Ensure branch is pushed to the remote!!!
+# Applies the currently checkout branch to the local cluster.
 apply:
-  # Setting up the local k3d cluster
+  @echo "Setting up the local k3d cluster"
   @terraform -chdir=infrastructure/environments/local apply -auto-approve &> /dev/null
-  # Applying bootstrap manifests and Custom Resource Definitions
+  @echo "Applying bootstrap manifests and Custom Resource Definitions"
   @# needs to be done twice as they include CRDs
   @if ! kubectl apply -k clusters/overlays/local &> /dev/null; then sleep 3; kubectl apply -k clusters/overlays/local &> /dev/null; fi
 
-  # Applying GitOps configurations
+  @echo "Applying GitOps configurations"
   @kubectl apply -k clusters/manifests/fluxcd &> /dev/null
   @kubectl apply -f clusters/overlays/local/flux-sources.yaml &> /dev/null
 
-  # Pathching tracked branch to currently checked out branch
-  @# TODO! Verfify that the branch exist on the remote, as FluxCD uses that as a source
+  @echo "Pathching tracked branch to currently checked out branch: $(git rev-parse --abbrev-ref HEAD)"
+  @# Check first if the branch has been pushed to the remote
+  @if ! git ls-remote --exit-code --heads origin $(git rev-parse --abbrev-ref HEAD) &> /dev/null; then \
+    echo "⚠️  Branch '$(git rev-parse --abbrev-ref HEAD)' not found on remote! Please push it first."; \
+    exit 1; \
+  fi
+  @# Then patch the resource
   @kubectl patch gitrepository flux-system \
     --namespace flux-system \
     --type merge \
