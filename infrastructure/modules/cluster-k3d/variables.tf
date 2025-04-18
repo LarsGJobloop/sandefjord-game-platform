@@ -12,7 +12,7 @@ variable "k3d_cluster_name" {
 
 variable "k3d_cluster_ip" {
   description = "The IP address the cluster will be hosted on."
-  default     = "0.0.0.0"
+  default     = "127.0.0.1"
   type        = string
 }
 
@@ -31,5 +31,17 @@ variable "server_count" {
 variable "agent_count" {
   description = "Number of agent nodes."
   default     = 1
+  type        = number
+}
+
+variable "registry_ip" {
+  description = "The IP address the registry will be hosted on."
+  default     = "127.0.0.1"
+  type        = string
+}
+
+variable "registry_port" {
+  description = "Port the registry will be exposed on."
+  default     = 5000
   type        = number
 }

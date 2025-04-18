@@ -1,10 +1,11 @@
-# See link for documentation https://k3d.io/v5.1.0/usage/configfile/
+# yaml-language-server: $schema=https://raw.githubusercontent.com/rancher/k3d/main/pkg/config/config.versions.schema.json
+
+# See link for documentation: https://k3d.io/v5.8.3/usage/configfile/
 apiVersion: k3d.io/v1alpha5
 kind: Simple
 servers: ${server_count}
 agents: ${agent_count}
 kubeAPI:
-  # host: "myhost.my.domain" # important for the `server` setting in the kubeconfig
   hostIP: ${cluster_ip}
   hostPort: "${cluster_port}"
 image: rancher/k3s:${k3s_version}
@@ -12,3 +13,19 @@ ports:
   - port: ${host_lb_port}:${cluster_lb_port}
     nodeFilters:
       - loadbalancer
+# See link for documentation: https://k3d.io/v5.8.3/usage/registries/
+registries:
+  create:
+    host: ${registry_ip}
+    hostPort: "${registry_port}"
+    name: registry.localhost
+    # proxy:
+    #   remoteURL: https://index.docker.io
+    volumes:
+      - /tmp/reg:/var/lib/registry
+  # This is actual registry config, so see here: https://distribution.github.io/distribution/about/configuration/
+  # config: |
+  #   mirrors:
+  #     "docker.io":
+  #       endpoint:
+  #         - http://docker-io:5000

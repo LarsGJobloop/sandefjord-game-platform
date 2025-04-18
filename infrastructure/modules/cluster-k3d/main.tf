@@ -11,6 +11,8 @@ locals {
     cluster_port    = local.k3d_cluster_port
     host_lb_port    = var.k3d_host_lb_port
     cluster_lb_port = local.k3d_cluster_lb_port
+    registry_ip     = var.registry_ip
+    registry_port   = var.registry_port
   })
 }
 
