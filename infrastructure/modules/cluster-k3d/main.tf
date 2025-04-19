@@ -62,10 +62,3 @@ resource "null_resource" "cluster" {
     when    = destroy
   }
 }
-
-data "docker_network" "k3d" {
-  name = "k3d-${var.k3d_cluster_name}"
-  depends_on = [
-    null_resource.cluster
-  ]
-}
