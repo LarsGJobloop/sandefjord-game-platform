@@ -3,3 +3,5 @@ bin
 
 Dockerfile
 .dockerignore
+
+manifests

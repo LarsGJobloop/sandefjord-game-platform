@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-dotnet
+spec:
+  selector:
+    app: test-dotnet
+  ports:
+    - targetPort: http
+      protocol: TCP
+      port: 80
