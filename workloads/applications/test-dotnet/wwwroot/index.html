@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Echo Server - v0.6</title>
+</head>
+
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: minmax(0, auto) 1fr minmax(0, auto);
+  }
+
+  main {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  main>div {
+    padding: 2rem 4rem;
+    border-radius: 8px;
+    background-color: cornflowerblue;
+    color: coral;
+    box-shadow: 2px 2px 8px 2px rgba(0, 0, 0, 0.2),
+      inset 1px 2px 8px 2px rgba(245, 245, 245, 0.4);
+    transition: all 200ms cubic-bezier(0.01, 0.38, 0.75, 0.99);
+  }
+
+  main>div:hover {
+    filter: drop-shadow(0 0 2rem rgb(220, 20, 167));
+    scale: 1.10;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+</style>
+
+<body>
+  <header>
+    <p class="text-center">Brand spanking new!</p>
+  </header>
+
+  <main>
+    <div>
+      <h1 class="text-center">Echo Server</h1>
+    </div>
+  </main>
+
+  <footer>
+    <p class="text-center">Kodehode Game Platform</p>
+  </footer>
+</body>
+
+</html>

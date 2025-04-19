@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-dotnet
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: test-dotnet
+  template:
+    metadata:
+      labels:
+        app: test-dotnet
+    spec:
+      containers:
+        - name: test-dotnet
+          image: ghcr.io/test-dotnet:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            limits:
+              cpu: "2000m"
+              memory: "512Mi"
+            requests:
+              cpu: "1000m"
+              memory: "256Mi"

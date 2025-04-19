@@ -1,12 +1,22 @@
-output "clusters_created" {
-  description = "Name of the created clusters."
-  value       = module.k3d-cluster.clusters_created
+output "cluster" {
+  description = "Cluster information."
+  value       = module.k3d_cluster.cluster
 }
-output "clusters_api_port" {
-  description = "Port of the Control Plane API."
-  value       = module.k3d-cluster.k3d_api_port
+
+output "loadbalancer" {
+  description = "Loadbalancer information."
+  value       = module.k3d_cluster.loadbalancer
 }
-output "clusters_loadbalancer" {
-  description = "Port of the load balancer."
-  value       = module.k3d-cluster.k3d_host_lb_port
+
+output "registry" {
+  description = "Registry information."
+  value = {
+    url  = module.k3d_cluster.registry.name
+    port = module.k3d_cluster.registry.port
+  }
+}
+
+output "registry_address" {
+  description = "Registry address."
+  value       = "${module.k3d_cluster.registry.name}:${module.k3d_cluster.registry.port}"
 }

@@ -1,5 +1,7 @@
 {
   "recommendations": [
-    "nefrob.vscode-just-syntax"
+    "nefrob.vscode-just-syntax",
+    "hashicorp.terraform",
+    "redhat.vscode-yaml"
   ]
 }
