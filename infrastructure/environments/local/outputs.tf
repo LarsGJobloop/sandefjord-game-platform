@@ -1,17 +1,22 @@
 output "cluster" {
   description = "Cluster information."
-  value = {
-    name               = module.k3d-cluster.cluster_name
-    address            = module.k3d-cluster.k3d_cluster_ip
-    control_plane_port = module.k3d-cluster.k3d_api_port
-    loadbalancer_port  = module.k3d-cluster.k3d_host_lb_port
-  }
+  value       = module.k3d_cluster.cluster
+}
+
+output "loadbalancer" {
+  description = "Loadbalancer information."
+  value       = module.k3d_cluster.loadbalancer
 }
 
 output "registry" {
   description = "Registry information."
   value = {
-    address = module.k3d-cluster.registry_ip
-    port    = module.k3d-cluster.registry_port
+    url  = module.k3d_cluster.registry.name
+    port = module.k3d_cluster.registry.port
   }
+}
+
+output "registry_address" {
+  description = "Registry address."
+  value       = "${module.k3d_cluster.registry.name}:${module.k3d_cluster.registry.port}"
 }

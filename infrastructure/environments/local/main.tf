@@ -1,4 +1,4 @@
-module "k3d-cluster" {
+module "k3d_cluster" {
   source = "../../modules/cluster-k3d"
 
   k3s_version = "v1.32.3-k3s1"

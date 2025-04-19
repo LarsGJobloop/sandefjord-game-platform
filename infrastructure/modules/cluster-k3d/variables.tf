@@ -34,6 +34,12 @@ variable "agent_count" {
   type        = number
 }
 
+variable "registry_name" {
+  description = "The IP name given to the registry."
+  default     = "registry.localhost"
+  type        = string
+}
+
 variable "registry_ip" {
   description = "The IP address the registry will be hosted on."
   default     = "127.0.0.1"

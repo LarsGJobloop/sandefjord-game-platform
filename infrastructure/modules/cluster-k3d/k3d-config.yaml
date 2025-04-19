@@ -13,19 +13,16 @@ ports:
   - port: ${host_lb_port}:${cluster_lb_port}
     nodeFilters:
       - loadbalancer
-# See link for documentation: https://k3d.io/v5.8.3/usage/registries/
+# See link for documentation: https://docs.k3s.io/installation/private-registry
 registries:
   create:
+    name: ${registry_name}
     host: ${registry_ip}
     hostPort: "${registry_port}"
-    name: registry.localhost
-    # proxy:
-    #   remoteURL: https://index.docker.io
     volumes:
       - /tmp/reg:/var/lib/registry
-  # This is actual registry config, so see here: https://distribution.github.io/distribution/about/configuration/
-  # config: |
-  #   mirrors:
-  #     "docker.io":
-  #       endpoint:
-  #         - http://docker-io:5000
+  config: |
+    mirrors:
+      "*":
+        endpoint:
+          - "http://registry.localhost:${registry_port}"
