@@ -69,4 +69,8 @@ update-app APP_NAME:
   echo "📦 Pushing image to local registry"
   docker push "${IMAGE_TAG}" || { echo "Upload failed"; exit 1; }
 
-  echo "✅ Image for '${APP_PATH}' pushed to ${REGISTRY_ADDRESS}"
+  # We likely will have to do something about the Namespace of the deployment here
+  echo "♻️ Triggering rollout restart for deployment '{{APP_NAME}}'"
+  kubectl rollout restart deployment "{{APP_NAME}}" || { echo "Rollout failed"; exit 1; }
+
+  echo "✅ Image for '${APP_PATH}' pushed to ${REGISTRY_ADDRESS} and rollout triggered"
