@@ -47,6 +47,7 @@
             natscli # Message Bus CLI
             minio-client # Object Store CLI
             bento # Message Bus Stream Processor
+            jq # JSON CLI stream processor
           ];
 
           # Development Environment Variables

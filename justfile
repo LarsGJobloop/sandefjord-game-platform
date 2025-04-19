@@ -44,6 +44,7 @@ verify-environment:
   command -v k3d >/dev/null || missing_tools+=("k3d (https://k3d.io/)")
   command -v terraform >/dev/null || missing_tools+=("terraform (https://developer.hashicorp.com/terraform)")
   command -v kubectl >/dev/null || missing_tools+=("kubectl (https://kubernetes.io/docs/tasks/tools/#kubectl)")
+  command -v jq >/dev/null || missing_tools+=("jq (https://jqlang.org/)")
   
   if [ ${#missing_tools[@]} -ne 0 ]; then
     echo "Missing required tools:"
@@ -53,7 +54,7 @@ verify-environment:
     exit 1
   fi
 
-# Loads the given applications Container Image into the local registry
+# Loads the given applications Container Image into the local registry and rolls it out to the cluster
 update-app APP_NAME:
   #!/bin/bash
   echo "🔍 Retrieving registry endpoint from Terraform outputs"
@@ -63,14 +64,29 @@ update-app APP_NAME:
   IMAGE_NAMESPACE="" # Prefix with '/' if not blank
   IMAGE_TAG="${REGISTRY_ADDRESS}${IMAGE_NAMESPACE}/{{APP_NAME}}:latest"
 
-  echo "🐳 Building Docker image: $IMAGE_TAG"
+  echo "🐳 Building Docker image: ${IMAGE_TAG}"
   docker build -t "${IMAGE_TAG}" "${APP_PATH}" || { echo "Build failed"; exit 1; }
 
   echo "📦 Pushing image to local registry"
   docker push "${IMAGE_TAG}" || { echo "Upload failed"; exit 1; }
 
-  # We likely will have to do something about the Namespace of the deployment here
-  echo "♻️ Triggering rollout restart for deployment '{{APP_NAME}}'"
-  kubectl rollout restart deployment "{{APP_NAME}}" || { echo "Rollout failed"; exit 1; }
+  # Get the namespaces where the image is used in deployments, yhea it's ugly. Better solutions are welcome.
+  # It grabs relavant data via 'kubectl' and filters and formats it using 'jq'
+  # Leading to a table of Deployments[Namespace, Name] which references the updated image
+  DEPLOYMENT_INFO="$(kubectl get deployments \
+    --all-namespaces \
+    --output json \
+    | jq --raw-output --arg IMAGE {{APP_NAME}} \
+      '.items[]
+        | select(.spec.template.spec.containers[].image | contains($IMAGE))
+        | [.metadata.namespace, .metadata.name]
+        | @tsv' \
+  )"
+  
+  # Loop through all matching deployments and trigger a rollout
+  while IFS=$'\t' read -r namespace deployment; do
+    echo "♻️ Restarting deployment '${deployment}' in '${namespace}"
+    kubectl rollout restart deployment "${deployment}" --namespace="${namespace}" || { echo "Rollout failed"; exit 1; }
+  done <<< "${DEPLOYMENT_INFO}"
 
   echo "✅ Image for '${APP_PATH}' pushed to ${REGISTRY_ADDRESS} and rollout triggered"
