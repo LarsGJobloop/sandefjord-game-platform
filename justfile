@@ -52,3 +52,21 @@ verify-environment:
     done
     exit 1
   fi
+
+# Loads the given applications Container Image into the local registry
+update-app APP_NAME:
+  #!/bin/bash
+  echo "🔍 Retrieving registry endpoint from Terraform outputs"
+  REGISTRY_ADDRESS=$(terraform -chdir=infrastructure/environments/local output -raw registry_address)
+
+  APP_PATH="./workloads/applications/{{APP_NAME}}"
+  IMAGE_NAMESPACE="" # Prefix with '/' if not blank
+  IMAGE_TAG="${REGISTRY_ADDRESS}${IMAGE_NAMESPACE}/{{APP_NAME}}:latest"
+
+  echo "🐳 Building Docker image: $IMAGE_TAG"
+  docker build -t "${IMAGE_TAG}" "${APP_PATH}" || { echo "Build failed"; exit 1; }
+
+  echo "📦 Pushing image to local registry"
+  docker push "${IMAGE_TAG}" || { echo "Upload failed"; exit 1; }
+
+  echo "✅ Image for '${APP_PATH}' pushed to ${REGISTRY_ADDRESS}"
