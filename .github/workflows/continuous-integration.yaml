@@ -1,0 +1,74 @@
+name: Continuous Integration
+
+# This is used to trigger the CI job
+# The job will run when a pull request is created against the main branch
+on:
+  pull_request:
+    branches:
+      - main
+
+# This is used to scope the permissions for the CI job
+permissions:
+  contents: read
+  pull-requests: read
+
+# This is used to prevent multiple CI jobs from running concurrently
+# If a new commit is pushed, the previous job will be cancelled and a new one will be started
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Create matrixes for the various CI targets
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      tf-files: ${{ steps.filter-tf.outputs.tf_files }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - uses: dorny/paths-filter@v3
+        id: filter-tf
+        with:
+          list-files: shell
+          filters: |
+            tf:
+              - added|modified: '**/*.tf'
+
+  # Run the format check for changed Terraform files
+  format-checks:
+    name: Format Checks
+    runs-on: ubuntu-latest
+    needs: changes
+    if: ${{ needs.changes.outputs.tf-files != '' }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: cachix/install-nix-action@v31
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check OpenTofu formatting
+        run: |
+          echo "## OpenTofu Format Check" >> $GITHUB_STEP_SUMMARY
+          if nix develop --command tofu fmt -check ${{ needs.changes.outputs.tf-files }} > tofu_output.txt 2>&1; then
+            echo "✅ All Terraform files properly formatted" >> $GITHUB_STEP_SUMMARY
+          else
+            cat tofu_output.txt >> $GITHUB_STEP_SUMMARY
+            echo "❌ Terraform formatting issues found" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+  # Aggregate the results of the checks and set the CI status
+  # This is used to determine the overall status of the CI pipeline
+  # Used in branch protection rules to prevent merging if the CI fails
+  ci-status:
+    name: CI Status
+    runs-on: ubuntu-latest
+    needs:
+      - changes
+      - format-checks
+    if: always()
+    steps:
+      - if: ${{ !cancelled() && !(contains(needs.*.result, 'failure')) }}
+        run: echo "CI passed"
+      - if: ${{ !cancelled() && contains(needs.*.result, 'failure') }}
+        run: echo "CI failed"
