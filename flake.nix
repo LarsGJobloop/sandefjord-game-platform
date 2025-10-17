@@ -24,6 +24,8 @@
             sops
             age
             just
+            # Tooling
+            yamllint
           ];
         };
       });
