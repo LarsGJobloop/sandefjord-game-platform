@@ -32,7 +32,7 @@ The exact scope and features will be determined through collaborative developmen
 
 ## Project Structure
 
-```
+```sh
 .
 ├── .github/          # GitHub workflows and templates
 ├── docs/             # Documentation and assets
