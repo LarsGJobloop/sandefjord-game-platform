@@ -1,0 +1,64 @@
+---
+alwaysApply: true
+description: Commit message structure and formatting guidelines
+---
+
+# Commit Message Structure
+
+Follow this format for all commit messages:
+
+## Format
+```
+<type>: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+## Type
+Use one of these core commit types:
+- `feat`: A new feature
+- `fix`: A bug fix
+- `refactor`: A code change that neither fixes a bug nor adds a feature
+- `docs`: Documentation only changes
+- `decision`: Project guidelines, standards, or architectural decisions
+
+## Description
+- Use imperative mood ("add feature" not "added feature")
+- Keep it under 50 characters
+- No period at the end
+- Focus on intent and user benefit rather than implementation details
+- Use terse, direct language - avoid marketing exaggerations
+
+## Body
+For complex changes, include a detailed description in the commit body:
+- Explain **what** was changed and **why**
+- List specific files, functions, or components affected
+- Mention any dependencies, configurations, or setup changes
+- Include relevant context or reasoning for the change
+
+## Examples
+
+### Simple commits
+```
+fix: align navigation buttons properly
+docs: provide setup instructions for new developers
+refactor: improve database query performance
+```
+
+**Note**: `feat` and `decision` commits should always include a body describing the intent.
+
+### Complex commits with body
+```
+feat: enable secure login with social providers
+
+Allow users to authenticate using Google and GitHub accounts
+instead of creating new passwords. This reduces friction for new
+user registration while maintaining security through established
+OAuth2 flows.
+
+The implementation includes JWT token verification, user model
+updates to store provider information, and frontend state
+management for seamless login experience.
+```
