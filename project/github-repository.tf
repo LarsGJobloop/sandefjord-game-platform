@@ -1,9 +1,9 @@
 resource "github_repository" "github_repository" {
-  name         = "sandefjord-game-platform"
-  description  = "Kodehode Sandefjord Game Platform"
+  name        = "sandefjord-game-platform"
+  description = "Kodehode Sandefjord Game Platform"
 
   # Settings
-  visibility   = "public"
+  visibility         = "public"
   archive_on_destroy = true
 
   # Features
