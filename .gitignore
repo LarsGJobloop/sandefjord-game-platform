@@ -1,0 +1,4 @@
+# Ignore IaC ephemeral and sensitive files
+.terraform
+*.tfvars
+*.tfstate*
