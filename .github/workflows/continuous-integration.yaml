@@ -25,6 +25,7 @@ jobs:
     outputs:
       tf-files: ${{ steps.filter.outputs.tf_files }}
       yaml-files: ${{ steps.filter.outputs.yaml_files }}
+      md-files: ${{ steps.filter.outputs.md_files }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -39,13 +40,15 @@ jobs:
             yaml:
               - added|modified: '**/*.yaml'
               - '!**/secrets.yaml'
+            md:
+              - added|modified: '**/*.md'
 
-  # Run the format check for changed Terraform and YAML files
+  # Run the format checks for changed files
   format-checks:
     name: Format Checks
     runs-on: ubuntu-latest
     needs: changes
-    if: ${{ needs.changes.outputs.tf-files != '' || needs.changes.outputs.yaml-files != '' }}
+    if: ${{ needs.changes.outputs.tf-files != '' || needs.changes.outputs.yaml-files != '' || needs.changes.outputs.md-files != '' }}
     steps:
       - uses: actions/checkout@v5
       - uses: cachix/install-nix-action@v31
@@ -71,6 +74,17 @@ jobs:
           else
             cat yaml_output.txt >> $GITHUB_STEP_SUMMARY
             echo "❌ YAML formatting issues found" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+      - name: Check Markdown formatting
+        if: ${{ needs.changes.outputs.md-files != '' }}
+        run: |
+          echo "## Markdown Format Check" >> $GITHUB_STEP_SUMMARY
+          if nix develop --command markdownlint-cli2 --config .markdownlint.yaml ${{ needs.changes.outputs.md-files }} > markdown_output.txt 2>&1; then
+            echo "✅ All Markdown files properly formatted" >> $GITHUB_STEP_SUMMARY
+          else
+            cat markdown_output.txt >> $GITHUB_STEP_SUMMARY
+            echo "❌ Markdown formatting issues found" >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
 
