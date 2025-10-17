@@ -26,6 +26,7 @@
             just
             # Tooling
             yamllint
+            markdownlint-cli2
           ];
         };
       });
