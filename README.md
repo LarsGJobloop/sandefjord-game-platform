@@ -21,6 +21,7 @@ Infrastructure as Code platform for managing game servers for social purposes.
 This repository is intended to manage the infrastructure for game servers used in social settings. The project is in early development and will evolve to meet the specific needs of the class and gaming requirements.
 
 As we explore the requirements and technical approaches, this platform may include:
+
 - Game server provisioning and management
 - Infrastructure automation for various game types
 - Monitoring and maintenance tools
@@ -45,7 +46,9 @@ The exact scope and features will be determined through collaborative developmen
 We're currently considering a couple of architectural approaches for the game server infrastructure:
 
 ### Common Foundation
+
 These initial ideas would use:
+
 - **Hetzner** as the cloud provider
 - **OpenTofu** for infrastructure provisioning and management
 - **Delegated subdomain** from an external repository (full NS and complete DNSSEC chains)
@@ -53,10 +56,12 @@ These initial ideas would use:
 - Our existing technology stack (SOPS, Age, Nix)
 
 ### Option 1: Simple IaC Push-Based Setup
+
 - **CI/CD** as the reconciler for changes
 - Simpler architecture with push-based deployment
 
 ### Option 2: Single-Node Kubernetes Cluster
+
 - **Kubernetes** with **Cluster API (CAPI)** for continuous observation and reconciliation
 - More complex but provides better observability and self-healing capabilities
 
@@ -72,6 +77,7 @@ nix develop
 ```
 
 The development shell includes:
+
 - OpenTofu for infrastructure management
 - SOPS for secrets handling
 - Age for encryption
