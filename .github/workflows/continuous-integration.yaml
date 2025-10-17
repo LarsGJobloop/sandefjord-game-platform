@@ -23,30 +23,36 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      tf-files: ${{ steps.filter-tf.outputs.tf_files }}
+      tf-files: ${{ steps.filter.outputs.tf_files }}
+      yaml-files: ${{ steps.filter.outputs.yaml_files }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - uses: dorny/paths-filter@v3
-        id: filter-tf
+      - uses: dorny/paths-filter@v3.0.2 # Predicate quantifier is new in v3.0.2
+        id: filter
         with:
           list-files: shell
+          predicate-quantifier: "every"
           filters: |
             tf:
               - added|modified: '**/*.tf'
+            yaml:
+              - added|modified: '**/*.yaml'
+              - '!**/secrets.yaml'
 
-  # Run the format check for changed Terraform files
+  # Run the format check for changed Terraform and YAML files
   format-checks:
     name: Format Checks
     runs-on: ubuntu-latest
     needs: changes
-    if: ${{ needs.changes.outputs.tf-files != '' }}
+    if: ${{ needs.changes.outputs.tf-files != '' || needs.changes.outputs.yaml-files != '' }}
     steps:
       - uses: actions/checkout@v5
       - uses: cachix/install-nix-action@v31
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Check OpenTofu formatting
+        if: ${{ needs.changes.outputs.tf-files != '' }}
         run: |
           echo "## OpenTofu Format Check" >> $GITHUB_STEP_SUMMARY
           if nix develop --command tofu fmt -check ${{ needs.changes.outputs.tf-files }} > tofu_output.txt 2>&1; then
@@ -54,6 +60,17 @@ jobs:
           else
             cat tofu_output.txt >> $GITHUB_STEP_SUMMARY
             echo "❌ Terraform formatting issues found" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+      - name: Check YAML formatting
+        if: ${{ needs.changes.outputs.yaml-files != '' }}
+        run: |
+          echo "## YAML Format Check" >> $GITHUB_STEP_SUMMARY
+          if nix develop --command yamllint --config-file .yaml-rules.yaml ${{ needs.changes.outputs.yaml-files }} > yaml_output.txt 2>&1; then
+            echo "✅ All YAML files properly formatted" >> $GITHUB_STEP_SUMMARY
+          else
+            cat yaml_output.txt >> $GITHUB_STEP_SUMMARY
+            echo "❌ YAML formatting issues found" >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
 
