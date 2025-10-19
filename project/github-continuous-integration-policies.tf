@@ -19,7 +19,7 @@ resource "github_branch_protection" "main" {
     strict = true
     # We are only asserting against the aggregate CI status currently
     contexts = [
-      "ci-status"
+      "CI Status"
     ]
   }
 
