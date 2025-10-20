@@ -1,1 +1,47 @@
 version: 1
+
+labels:
+  # CI/CD and workflow automation
+  - label: "automation"
+    files:
+      - "\\.github/.*"
+
+  # Documentation (including license and all Markdown)
+  - label: "documentation"
+    files:
+      - "docs/.*"
+  - label: "documentation"
+    files:
+      - ".*\\.md"
+  - label: "documentation"
+    files:
+      - "LICENSE"
+
+  # Project configuration
+  - label: "project"
+    files:
+      - "project/.*"
+
+  # Development environment and tooling (Nix)
+  - label: "dev-environment"
+    files:
+      - "flake\\.nix"
+  - label: "dev-environment"
+    files:
+      - "flake\\.lock"
+
+  # Dependencies (lockfiles, etc)
+  - label: "dependencies"
+    files:
+      - "flake\\.lock"
+  - label: "dependencies"
+    files:
+      - ".*\\.terraform\\.lock\\.hcl"
+
+  # Security-sensitive areas (secrets, policy/permissions)
+  - label: "security"
+    files:
+      - ".*\\.sops\\.yaml"
+      - ".*\\secrets\\.yaml"
+      - "./project/github-continuous-integration-policies\\.tf"
+      - "./project/github-collaborators\\.tf"
