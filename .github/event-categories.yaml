@@ -45,3 +45,25 @@ labels:
       - ".*\\secrets\\.yaml"
       - "./project/github-continuous-integration-policies\\.tf"
       - "./project/github-collaborators\\.tf"
+
+  # Commit message type labels (must be kept synchronized with commit message rules)
+  - label: "feat"
+    files:
+      - ".*"
+    title: "feat:"
+  - label: "fix"
+    files:
+      - ".*"
+    title: "fix:"
+  - label: "refactor"
+    files:
+      - ".*"
+    title: "refactor:"
+  - label: "docs"
+    files:
+      - ".*"
+    title: "docs:"
+  - label: "decision"
+    files:
+      - ".*"
+    title: "decision:"
