@@ -16,8 +16,6 @@ This project uses automated event classification to categorize changes and provi
 
 **Classification Categories**:
 
-**File-based Categories**:
-
 - `automation`: CI/CD workflows, GitHub Actions, automation scripts
 - `documentation`: Documentation files, README, license files  
 - `project`: Repository configuration, collaborator management, project settings
@@ -25,32 +23,14 @@ This project uses automated event classification to categorize changes and provi
 - `dependencies`: Dependency updates, lockfiles, version bumps
 - `security`: Security-sensitive files, secrets, policies
 
-**Commit Message Type Categories**:
-
-- `feat`: New features and functionality
-- `fix`: Bug fixes and corrections
-- `refactor`: Code changes that neither fix bugs nor add features
-- `docs`: Documentation-only changes
-- `decision`: Project guidelines, standards, or architectural decisions
-
-**Note**: Commit message type categories must be kept synchronized between:
-
-1. The authoritative definitions in [`.cursor/rules/commit-messages.mdc`](../.cursor/rules/commit-messages.mdc)
-2. The labeling patterns in [`.github/event-categories.yaml`](../.github/event-categories.yaml)
-
 **Multiple Labels**: Changes can receive multiple labels when they affect different categories, enabling downstream systems to make appropriate routing decisions based on the full context of the change.
-
-**Multi-Commit Pull Request Labeling**: When a pull request contains multiple commits with different message types, all relevant commit-type labels are applied. This provides transparency about the full scope of changes and enables quality control:
-
-- **Transparency**: All commit types in a PR are visible, preventing "sneaky" changes
-- **Quality Control**: CI systems can detect mixed-purpose PRs (e.g., `feat` + `fix` + `docs`) and require review or splitting
-- **Trunk-Based Development**: Supports TDD-style development where PRs often contain related commits for features, tests, and documentation
-- **Alerting**: Downstream systems can warn when PRs mix different types of changes that might need separate review cycles
 
 ## Commit Message Classification
 
-In addition to file-based classification, this project uses structured commit messages to provide semantic signals about the nature of changes. All commit messages follow a standardized format that enables automated processing and downstream system integration.
+This project uses structured commit messages to provide semantic signals about the nature of changes. All commit messages follow a standardized format that enables automated processing and downstream system integration.
 
 **Commit Message Rules**: See [`.cursor/rules/commit-messages.mdc`](../.cursor/rules/commit-messages.mdc) for the complete commit message format and type definitions.
 
-**Integration**: The commit message type provides semantic context that complements the file-based classification, enabling downstream systems to understand both what files changed and the intent behind those changes.
+**Note**: Commit message classification is separate from the automated file-based labeling system. While commit messages provide semantic context about the intent of changes, the automated labeling focuses on the technical aspects of what files were modified.
+
+**Implementation Limitation**: No existing labeler actions support commit message or PR title matching. While this would provide valuable semantic signals, the maintenance burden of implementing and maintaining a custom solution outweighs the current need for this functionality.
