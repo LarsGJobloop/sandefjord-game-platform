@@ -1,0 +1,28 @@
+name: Classify Event
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  classify-event:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Classify Event
+        uses: srvaroa/labeler@master
+        with:
+          config_path: .github/event-categories.yaml
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
