@@ -23,6 +23,7 @@ Use one of these core commit types:
 - `refactor`: A code change that neither fixes a bug nor adds a feature
 - `docs`: Documentation only changes
 - `decision`: Project guidelines, standards, or architectural decisions
+- `deps`: Dependency updates, additions, or removals
 
 ## Description
 - Use imperative mood ("add feature" not "added feature")
@@ -45,9 +46,10 @@ For complex changes, include a detailed description in the commit body:
 fix: align navigation buttons properly
 docs: provide setup instructions for new developers
 refactor: improve database query performance
+deps: bump Nix Flake inputs
 ```
 
-**Note**: `feat` and `decision` commits should always include a body describing the intent.
+**Note**: `feat` and `decision` commits should always include a body describing the intent. `deps` commits only require a body for additions, removals, or downgrades.
 
 ### Complex commits with body
 ```
@@ -61,4 +63,15 @@ OAuth2 flows.
 The implementation includes JWT token verification, user model
 updates to store provider information, and frontend state
 management for seamless login experience.
+```
+
+```
+deps: add internal logging package
+
+Add custom logging package to centralize application logging
+across all services. Implements structured logging with configurable
+output formats and log levels.
+
+This package provides consistent logging interface for the entire
+platform and reduces code duplication across microservices.
 ```
