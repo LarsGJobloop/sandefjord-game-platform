@@ -1,0 +1,68 @@
+name: "OpenTofu Plan"
+description: "Generate OpenTofu plan for infrastructure changes"
+inputs:
+  target-directory:
+    description: "Directory containing OpenTofu configuration"
+    required: true
+  github-token:
+    description: "GitHub token for Nix cache access"
+    required: true
+  sops-age-key:
+    description: "SOPS Age key for secrets decryption"
+    required: true
+  secrets-file:
+    description: "Path to secrets file relative to target directory"
+    required: false
+    default: "secrets.yaml"
+  plan-output:
+    description: "Output filename for the plan"
+    required: false
+    default: "plan.tfplan"
+  plan-text:
+    description: "Output filename for the readable plan text"
+    required: false
+    default: "plan.txt"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Nix
+      uses: cachix/install-nix-action@v31
+      with:
+        github_access_token: ${{ inputs.github-token }}
+
+    - name: Generate plan
+      shell: bash
+      run: |
+        cd ${{ inputs.target-directory }}
+        echo "🔧 Initializing OpenTofu for ${{ inputs.target-directory }}..."
+        nix develop --command sops exec-env ${{ inputs.secrets-file }} "tofu init"
+
+        echo "📋 Generating plan for ${{ inputs.target-directory }}..."
+        nix develop --command sops exec-env ${{ inputs.secrets-file }} "tofu plan -out=${{ inputs.plan-output }}"
+
+        echo "📄 Converting plan to readable format..."
+        nix develop --command tofu show -no-color ${{ inputs.plan-output }} > ${{ inputs.plan-text }}
+
+        echo "✅ Plan generated successfully for ${{ inputs.target-directory }}"
+      env:
+        SOPS_AGE_KEY: ${{ inputs.sops-age-key }}
+
+    - name: Write summary
+      shell: bash
+      run: |
+        echo "## 🔍 OpenTofu Plan: ${{ inputs.target-directory }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+
+        # Check if plan has changes
+        if grep -q "No changes" "${{ inputs.target-directory }}/${{ inputs.plan-text }}"; then
+          echo "✅ **No changes required** - Infrastructure is up to date" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "📋 **Changes detected** - Review the plan below:" >> $GITHUB_STEP_SUMMARY
+        fi
+
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo '```terraform' >> $GITHUB_STEP_SUMMARY
+        cat "${{ inputs.target-directory }}/${{ inputs.plan-text }}" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY

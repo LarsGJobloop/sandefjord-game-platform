@@ -1,0 +1,37 @@
+name: Project Infrastructure Plan
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "project/**"
+      - ".github/workflows/continuous-integration-plan.yaml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  plan-project-infrastructure:
+    name: Plan Project Infrastructure
+    runs-on: ubuntu-latest
+    environment: project-infrastructure
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Generate OpenTofu Plan
+        uses: ./.github/actions/opentofu-plan
+        with:
+          target-directory: "project"
+          # SECURITY NOTE: Passing secrets to composite actions carries risk
+          # as the action code has access to these values. This is acceptable
+          # here since we control the action code locally, but should be
+          # reviewed if the action is ever moved to external sources.
+          sops-age-key: ${{ secrets.PROJECT_SOPS_AGE_KEY }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          secrets-file: "secrets.yaml"
